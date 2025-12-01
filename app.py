@@ -2,11 +2,14 @@
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
+
+# Entrada dos dados gerais do sistema
 
 # 5 disciplinas fixas
 disciplinas = [
@@ -39,14 +42,32 @@ alunos = [
     }
 ]
 
+professores = {
+    "email": "administrador@teste.com",
+    "senha": "teste123456"
+}
 
-# GET /alunos - Listar alunos cadastrados
-@app.route('/alunos', methods=['GET'])
-def listar_alunos():
-    return jsonify({
-        "disciplinas": disciplinas,
-        "alunos": alunos
-    }), 200
+
+# Login para professores
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.json
+    email = data.get("email")
+    senha = data.get("senha")
+
+    professor_fixo = {
+        "email": "administrador@teste.com",
+        "senha": "teste123456"
+    }
+
+    if email != professor_fixo["email"]:
+        return jsonify({"message": "E-mail não cadastrado"}), 400
+
+    if senha != professor_fixo["senha"]:
+        return jsonify({"message": "Senha incorreta"}), 401
+
+    return jsonify({"message": "Login autorizado"}), 200
+
 
 
 
